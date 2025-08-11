@@ -161,6 +161,35 @@ func TestQRCodeISOAnnexIExample(t *testing.T) {
 	}
 }
 
+func TestQuietZoneSize(t *testing.T) {
+	// Test default quiet zone size (4)
+	q1, err := New("test", Medium)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q1.QuietZoneSize != 4 {
+		t.Errorf("Expected default QuietZoneSize to be 4, got %d", q1.QuietZoneSize)
+	}
+
+	// Test custom quiet zone size
+	q2, err := NewWithQuietZone("test", Medium, 8)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q2.QuietZoneSize != 8 {
+		t.Errorf("Expected custom QuietZoneSize to be 8, got %d", q2.QuietZoneSize)
+	}
+
+	// Test zero quiet zone size
+	q3, err := NewWithQuietZone("test", Medium, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q3.QuietZoneSize != 0 {
+		t.Errorf("Expected zero QuietZoneSize to be 0, got %d", q3.QuietZoneSize)
+	}
+}
+
 func BenchmarkQRCodeURLSize(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		New("http://www.example.org", Medium)

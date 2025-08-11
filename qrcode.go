@@ -139,6 +139,9 @@ type QRCode struct {
 	// Disable the QR Code border.
 	DisableBorder bool
 
+	// Quiet zone size (border around QR code). Default is 4.
+	QuietZoneSize int
+
 	encoder *dataEncoder
 	version qrCodeVersion
 
@@ -154,6 +157,16 @@ type QRCode struct {
 //
 // An error occurs if the content is too long.
 func New(content string, level RecoveryLevel) (*QRCode, error) {
+	return NewWithQuietZone(content, level, 4)
+}
+
+// NewWithQuietZone constructs a QRCode with custom quiet zone size.
+//
+//	var q *qrcode.QRCode
+//	q, err := qrcode.NewWithQuietZone("my content", qrcode.Medium, 8)
+//
+// An error occurs if the content is too long.
+func NewWithQuietZone(content string, level RecoveryLevel, quietZoneSize int) (*QRCode, error) {
 	encoders := []dataEncoderType{dataEncoderType1To9, dataEncoderType10To26,
 		dataEncoderType27To40}
 
@@ -191,6 +204,7 @@ func New(content string, level RecoveryLevel) (*QRCode, error) {
 
 		ForegroundColor: color.Black,
 		BackgroundColor: color.White,
+		QuietZoneSize:   quietZoneSize,
 
 		encoder: encoder,
 		data:    encoded,
@@ -207,6 +221,16 @@ func New(content string, level RecoveryLevel) (*QRCode, error) {
 //
 // An error occurs in case of invalid version.
 func NewWithForcedVersion(content string, version int, level RecoveryLevel) (*QRCode, error) {
+	return NewWithForcedVersionAndQuietZone(content, version, level, 4)
+}
+
+// NewWithForcedVersionAndQuietZone constructs a QRCode of a specific version with custom quiet zone size.
+//
+//	var q *qrcode.QRCode
+//	q, err := qrcode.NewWithForcedVersionAndQuietZone("my content", 25, qrcode.Medium, 8)
+//
+// An error occurs in case of invalid version.
+func NewWithForcedVersionAndQuietZone(content string, version int, level RecoveryLevel, quietZoneSize int) (*QRCode, error) {
 	var encoder *dataEncoder
 
 	switch {
@@ -248,6 +272,7 @@ func NewWithForcedVersion(content string, version int, level RecoveryLevel) (*QR
 
 		ForegroundColor: color.Black,
 		BackgroundColor: color.White,
+		QuietZoneSize:   quietZoneSize,
 
 		encoder: encoder,
 		data:    encoded,
@@ -403,7 +428,7 @@ func (q *QRCode) encode() {
 		var s *symbol
 		var err error
 
-		s, err = buildRegularSymbol(q.version, mask, encoded, !q.DisableBorder)
+		s, err = buildRegularSymbol(q.version, mask, encoded, !q.DisableBorder, q.QuietZoneSize)
 
 		if err != nil {
 			log.Panic(err.Error())
