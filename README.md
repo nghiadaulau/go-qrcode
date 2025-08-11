@@ -31,7 +31,25 @@ A command-line tool `qrcode` will be built into `$GOPATH/bin/`.
 
         err := qrcode.WriteColorFile("https://example.org", qrcode.Medium, 256, color.Black, color.White, "qr.png")
 
+- **Create a QR code with custom quiet zone size:**
+
+        q, err := qrcode.NewWithQuietZone("https://example.org", qrcode.Medium, 8)
+        if err != nil {
+            log.Fatal(err)
+        }
+        err = q.WriteFile(256, "qr.png")
+
+- **Create a QR code with no quiet zone (borderless):**
+
+        q, err := qrcode.NewWithQuietZone("https://example.org", qrcode.Medium, 0)
+        if err != nil {
+            log.Fatal(err)
+        }
+        err = q.WriteFile(256, "qr.png")
+
 All examples use the qrcode.Medium error Recovery Level and create a fixed 256x256px size QR Code. The last function creates a white on black instead of black on white QR Code.
+
+**Note:** The default quiet zone size is 4 modules. You can customize this using `NewWithQuietZone()` or `NewWithForcedVersionAndQuietZone()` functions.
 
 ## Documentation
 
